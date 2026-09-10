@@ -1,5 +1,6 @@
-print("hello!")
 # Need to change code so that annotations are before the code rather than after
+
+print("hello again!")
 
 # This line prints a simple greeting to the user so the script starts with a visible message.
 # The print() function displays text inside quotation marks on the screen.
