@@ -12,6 +12,9 @@ import os
 # This line imports matplotlib.pyplot, which is the part of Matplotlib used to make charts and plots in Python.
 import matplotlib.pyplot as plt
 
+# This line imports numpy so we can add a little random jitter to each data point when overlaying them on the violin plots.
+import numpy as np
+
 # This line creates the folder path to the Bee Mass Distributions folder where the data file is saved.
 # It uses the folder where this script is stored, so the path stays tied to this project folder.
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -139,5 +142,61 @@ for ax, species_name in zip(axes2, ["amel", "ecin"]):
 # This line adjusts the spacing around the second figure so all labels and titles fit neatly.
 plt.tight_layout()
 
-# This line tells Python to display both graphs on screen so the user can compare the mean plot and the distribution plot.
+
+# -----------------------------------------------------------------------------------------------------------
+# Create an even more comprehensive version of the previous plots, using violin graphs instead of boxplots
+# To make the data more readily visible, I also want each data point for all bees overlayed on the violins
+
+# This line creates a third figure for violin plots so we can compare the full mass distribution for each altitude group.
+fig3, axes3 = plt.subplots(1, 2, figsize=(12, 5))
+
+# This line adds a title to the overall violin plot figure so it is clear the chart compares distributions by species and altitude.
+fig3.suptitle("Bee Mass Violin Plot Across Altitude by Species")
+
+# This line loops over each bee species and draws a violin plot for the low and high altitude groups.
+for ax, species_name in zip(axes3, ["amel", "ecin"]):
+
+# This line keeps only the rows for the current species before creating the two altitude groups.
+    species_df = df[df["species"] == species_name]
+
+# This line chooses the exact low and high altitude values for the current species.
+    altitude_levels = [200, 2100] if species_name == "amel" else [300, 1250]
+
+# This line creates a list of mass values for each altitude, so the violin plot can be drawn for both groups.
+    altitude_groups = [species_df[species_df["altitude"] == altitude]["mass"].tolist() for altitude in altitude_levels]
+
+# This line draws the violin plot for the two altitude groups and shows the mean line inside each violin.
+    violin_parts = ax.violinplot(altitude_groups, positions=[1, 2], widths=0.6, showmeans=True)
+
+# This line styles the violin bodies so they are easy to distinguish and view.
+    for body in violin_parts["bodies"]:
+        body.set_facecolor("#8ecae6")
+        body.set_edgecolor("black")
+        body.set_alpha(0.75)
+
+# This line overlays each individual bee mass as a scatter point with a tiny bit of horizontal jitter for readability.
+    for i, group in enumerate(altitude_groups):
+        if len(group) == 0:
+            continue
+        jitter = np.random.normal(0, 0.04, len(group))
+        ax.scatter(np.full(len(group), i + 1) + jitter, group, color="#1f77b4", s=18, alpha=0.75, zorder=3)
+
+# This line sets the x-tick labels so the viewer knows the two boxes represent low and high altitude.
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels(["Low altitude", "High altitude"])
+
+# This line labels the x-axis and y-axis so the plot is easy to interpret.
+    ax.set_xlabel("Altitude group")
+    ax.set_ylabel("Mass (g)")
+
+# This line sets the title for the current subplot to the species name.
+    ax.set_title(f"{species_name} bees")
+
+# This line adds a light grid to make the mass values easier to read.
+    ax.grid(True, axis="y", linestyle="--", alpha=0.5)
+
+# This line adjusts spacing so the title, labels, and points all fit properly inside the figure.
+plt.tight_layout()
+
+# This line tells Python to display the final violin plot figure so the user can compare species and altitude distributions.
 plt.show()
