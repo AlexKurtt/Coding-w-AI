@@ -198,5 +198,8 @@ for ax, species_name in zip(axes3, ["amel", "ecin"]):
 # This line adjusts spacing so the title, labels, and points all fit properly inside the figure.
 plt.tight_layout()
 
+# This line saves the final violin plot as a PNG in the folder containing this script.
+fig3.savefig(os.path.join(script_dir, "bee_mass_violin_plot.png"), dpi=300, bbox_inches="tight")
+
 # This line tells Python to display the final violin plot figure so the user can compare species and altitude distributions.
 plt.show()
